@@ -40,7 +40,7 @@ var Logger = (function() {
 
     var _syndication         = 'online_advice';
     var _session_id          = window.session_id;
-    var _interaction_log_url = '/api/logger/post_interaction/';
+    var _interaction_log_url = 'https://clicknow.io/api/logger/post_interaction/';
 
     return {
 
