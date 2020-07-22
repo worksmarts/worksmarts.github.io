@@ -8,6 +8,7 @@ for (var i = 0; i < gifts.length; i++) {
     gifts[index].addEventListener("click", function () {
       if (last_index != index) {
         count++;
+          Logger.LogInteraction('clicknow.io', 'GIFT CLICK COUNT: '+count);
         last_index = index;
         if (count <= max) {
           if (count == max) {
@@ -15,7 +16,7 @@ for (var i = 0; i < gifts.length; i++) {
             setTimeout(function () {
               $('.content--step-1').css('display', 'none');
               $('.content--step-2').css('display', 'block');
-            }, 2000);
+            }, 500);
           } else {
             gifts[index].className = "gift gift-fail";
           }

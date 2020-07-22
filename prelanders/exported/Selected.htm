@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Selected!</title>
   <link rel="stylesheet" href="/prelanders/exported/dayparting.css">
   <link rel="stylesheet" href="/prelanders/exported/bootstrap.min.css">
-  
+
   <style>
     body {
       height: 100%;
@@ -879,8 +879,8 @@ svg rect {
 <body data-gr-c-s-loaded="true">
 
   <div class="wrapper">
-    <div class="header">
-      <img src="/prelanders/exported/asdalogo.png" class="img-responsive">
+    <div class="header" data-log="BANNER">
+      <img src="/prelanders/exported/asdalogo.png" class="img-responsive" data-log="[CLICK] GIFTCARD">
     </div>
     <div class="content content--step-1">
       <div id="questionWrapper">
@@ -897,13 +897,13 @@ svg rect {
           <div class="gifts">
             <div class="row">
               <div class="col-xs-4 col-padding">
-                <div class="gift gift-default"></div>
+                <div class="gift gift-default" data-log="[CLICK] GIFT 1"></div>
               </div>
               <div class="col-xs-4 col-padding">
-                <div class="gift gift-default"></div>
+                <div class="gift gift-default" data-log="[CLICK] GIFT 2"></div>
               </div>
               <div class="col-xs-4 col-padding">
-                <div class="gift gift-default"></div>
+                <div class="gift gift-default" data-log="[CLICK] GIFT 3"></div>
               </div>
             </div>
           </div>
@@ -924,7 +924,7 @@ svg rect {
   </svg>
 </div>
 </div>
-            <button class="answer cmpbtn">CONTINUE</button>
+            <button class="answer cmpbtn" data-log="[CLICK] CONTINUE">CONTINUE</button>
           </div>
         </div>
       </div>
@@ -932,12 +932,12 @@ svg rect {
     <div class="main-content">
       <div class="previous-winners">
         <img src="/prelanders/exported/emojis.png" class="emojis">
-        <div class="counter">12K</div>
-        <div class="shares">983 shares</div>
-        <div class="total-comments">1388K comments</div>
+        <div data-log="[CLICK] COUNTER" class="counter">12K</div>
+        <div data-log="[CLICK] SHARES" class="shares">983 shares</div>
+        <div data-log="[CLICK] COMMENTS" class="total-comments">1388K comments</div>
       </div>
       <div>
-        
+
         <div class="comments" id="comment1">
           <img src="/prelanders/exported/image-5.png" alt="Avatar" class="avatar">
           <div class="comment-content">
@@ -951,7 +951,7 @@ svg rect {
           </div>
           <div class="clr"></div>
         </div>
-        
+
         <div class="comments" id="comment2">
           <img src="/prelanders/exported/image-3.png" alt="Avatar" class="avatar">
           <div class="comment-content">
@@ -965,7 +965,7 @@ svg rect {
           </div>
           <div class="clr"></div>
         </div>
-        
+
         <div class="comments" id="comment3">
           <img src="/prelanders/exported/image-23.png" alt="Avatar" class="avatar">
           <div class="comment-content">
@@ -979,21 +979,22 @@ svg rect {
           </div>
           <div class="clr"></div>
         </div>
-        
+
       </div>
     </div>
   </div>
   <div class="footer">This Competition is in no way sponsored, endorsed or administered by, or associated with, Facebook. You are providing your information to a third party and not to Facebook. The information you provide will be used for entry into the competition and kept private by the third party competition provider. Photos of winners used for this campaign, are for demonstration purposes only and are not reflective of the actual winners.</div>
   <script type="text/javascript">
-  window.campaignUrl = "https://app.trk12.com/campaign/38d0ed7eb34da8b21c6862c26b803bbf4ae916d8"
-  window.cannotContinueMessage = ""
-</script>
-<script src="/prelanders/exported/jquery.js"></script>
-<script src="/prelanders/exported/dayparting.js"></script>
-<script src="/prelanders/exported/image-loader.js"></script>
-
+   window.campaignUrl = "https://app.trk12.com/campaign/a55422cdd941ddfc269008eaea7de696f7012a63"
+   window.cannotContinueMessage = ""
+   window.session_id = '{{session_id}}';
+  </script>
+  <script src="/prelanders/exported/jquery.js"></script>
+  <script src="/prelanders/exported/dayparting.js"></script>
+  <script src="/prelanders/exported/image-loader.js"></script>
+  <script src="/prelanders/exported/global_logger.js"></script>
   <script src="/prelanders/exported/redirect_button.js"></script>
-  
+
 
   <script src="/prelanders/exported/gifts.js"></script>
   <script src="/prelanders/exported/moment-with-locales.js"></script>
@@ -1003,11 +1004,11 @@ svg rect {
   </script>
   <script src="/prelanders/exported/datei18n.js"></script>
 
-  
-    
-  
-
-
-
+  <script>
+   $(document).ready(function(){
+       Logger.LogInteraction('clicknow.io', 'DOC_READY');
+       Logger.AddEventListenerToElements(['.gift', '.answer', '.like', '.reply', '.comment'], 'clicknow.io');
+   });
+  </script>
 
 </body></html>
