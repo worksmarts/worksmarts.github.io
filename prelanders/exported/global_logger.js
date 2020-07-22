@@ -1,3 +1,5 @@
+/* clear cache 12321312 */
+
 var Logger = (function() {
 
     var _getParameterByName = function(name, url) {
