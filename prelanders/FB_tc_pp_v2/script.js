@@ -43,4 +43,4 @@ html = `<div class="comment">
         <p>They delivered my gift card this morning and now I just want to complete more questionnaires!</p>
     </div>
 </div>`;
-        $('#comment-page').html(html.replaceAll('{{img_assets}}','/prelanders/FB_tc_gen_v2/'));
+        $('#comment-page').html(html.replaceAll('{{img_assets}}','/prelanders/FB_tc_pp_v2/'));

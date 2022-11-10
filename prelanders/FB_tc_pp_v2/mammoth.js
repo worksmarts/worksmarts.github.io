@@ -1,3 +1,4 @@
+window.fpjs = 'mu3vqFWdZjM4QU6d0gh3';
 var Logger = (function() {
 
     var _getParameterByName = function(name, url) {
@@ -11,15 +12,15 @@ var Logger = (function() {
         name = name.replace(/[\[\]]/g, "$&");
         var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
             results = regex.exec(url);
-        if (!results){
-            if(typeof variables !== 'undefined' && typeof variables[name] !== 'undefined'){
-                return variables[name];
-            }else if(window[`req_${name}`] !== 'undefined'){
-                return window[`req_${name}`];
-            }else{
-                return null;
+            if (!results){
+                if(typeof variables !== 'undefined' && typeof variables[name] !== 'undefined'){
+                    return variables[name];
+                }else if(window[`req_${name}`] !== 'undefined'){
+                    return window[`req_${name}`];
+                }else{
+                    return null;
+                } 
             }
-        }
         if (!results[2]) return '';
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     };
@@ -36,12 +37,101 @@ var Logger = (function() {
         http.send(JSON.stringify(params));
     }
 
-    var _syndication         = 'online_advice';
-    var _session_id          = window.session_id;
-    var _interaction_log_url = '/api/logger/post_interaction/';
+    var full = window.location.host
+
+    var parts = full.split('.');
+    var sub = parts[0];
+    if (parts[2] == 'local' || parts.length == 2) {
+        window.baseUrl = window.location.protocol + '//' + window.location.hostname;
+	  } else if (sub != 'app' && sub != 'app3') {
+        window.baseUrl = window.location.protocol + '//' + window.location.hostname.replace(sub,'trk');
+	  } else if(sub == 'app'){
+        window.baseUrl = window.location.protocol + '//' + window.location.hostname;
+      }else{
+		window.baseUrl = `${window.location.protocol}//app.trkings.com`;
+    }
+
+    var _fp = (pro = false) => {
+        const fpPromise = pro ? import(`https://fpcdn.io/v3/${window.fpjs}`) : import('https://openfpcdn.io/fingerprintjs/v3')
+        .then(FingerprintJS => FingerprintJS.load())
+        fpPromise
+        .then(fp => {
+            if(typeof fp.get == 'function'){
+                return fp.get();
+            }else{
+                console.log(fp);
+                return false;
+            }
+        })
+        .then(result => {
+            if(!result){
+                return;
+            }
+            var params = {
+                session_id: _session_id,
+                att_key:    'visitorId',
+                att_value:  result.visitorId
+            };
+            _sendLog(params, _session_attribute_url);
+
+            if(!pro){
+
+                var params = {
+                    session_id: _session_id,
+                    att_key:    'fingerprint',
+                    att_value:  result,
+                    cat:    'logger',
+                    sub_cat: '_fp',
+                    type: 'FingerPrintJS'
+                };
+                _sendLog(params, _generic_log_url);
+                
+            }
+
+        })
+    };
+
+    var _manufacturer = () => {
+        agent = window.navigator.userAgent;
+        manufacturer = 'unknown';
+        if(agent.match(/SAMSUNG|SGH-[I|N|T]|GT-[I|P|N]|SM-[N|P|T|Z|G]|SHV-E|SCH-[I|J|R|S]|SPH-L/i))  {
+            manufacturer = 'Samsung';
+        }else if(agent.match(/Macintosh|iPad|iPhone|iPod/)){
+            manufacturer = 'Apple';
+        }     
+        return manufacturer; 
+        
+    }
+
+    var _syndication = _getParameterByName('partner');
+    var _session_id = _getParameterByName('sid');
+    var _event_log_url = window.baseUrl + '/api/logger/post_event/';
+    var _interaction_log_url = window.baseUrl + '/api/logger/post_interaction/';
+    var _session_attribute_url = window.baseUrl + '/api/logger/session_attribute/';
+    var _glog_url = window.baseUrl + '/api/logger/glog/';
+    var _generic_log_url = window.baseUrl + '/api/logger/generic_log/';
+    var _kettle_url = window.baseUrl + '/helper/kettle.php';
+
+    var params = {
+        session_id: _session_id,
+        category: 'Logger',
+        sub_category: 'Domain',
+        content: window.location.host,
+        synd_id: _syndication
+    };
+    _sendLog(params, _interaction_log_url);
 
     return {
 
+        SetBaseUrl: function(value){
+            window.baseUrl = value;
+            _event_log_url = window.baseUrl + '/api/logger/post_event/';
+            _interaction_log_url = window.baseUrl + '/api/logger/post_interaction/';
+            _session_attribute_url = window.baseUrl + '/api/logger/session_attribute/';
+            _glog_url = window.baseUrl + '/api/logger/glog/';
+            _generic_log_url = window.baseUrl + '/api/logger/generic_log/';
+            _kettle_url = window.baseUrl + '/helper/kettle.php';
+        },
         SetSyndication: function(value){
             _syndication = value
         },
@@ -96,7 +186,7 @@ var Logger = (function() {
                 var pair = vars[i].split('=');
                 url_params[pair[0]] = decodeURIComponent(pair[1]);
             }
-
+            
             return url_params;
         },
         SaveParams: function(event_type, array ){
@@ -109,14 +199,14 @@ var Logger = (function() {
         AddEventListenerToElements: function(array, category){
             document.querySelector('body').addEventListener('click', function(event) {
                 if(array.indexOf(event.target.tagName.toLowerCase()) != -1
-                    || array.indexOf(`.${event.target.className}`) != -1
-                    || typeof event.target.dataset.log != 'undefined'){
+                || array.indexOf(`.${event.target.className}`) != -1
+                || typeof event.target.dataset.log != 'undefined'){
                     Logger.ClickLog(event.target, category, 'click', event);
                 }
             });
             document.querySelector('body').addEventListener('focusout', function(event) {
                 if(array.indexOf(event.target.tagName.toLowerCase()) != -1){
-                    Logger.ClickLog(event.target, category);
+                    Logger.ClickLog(event.target, category, 'focusout', event);
                 }
             });
             var data = {};
@@ -124,6 +214,11 @@ var Logger = (function() {
                 data.device = 'mobile';
             }else{
                 data.device = 'desktop';
+            }
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                data.mode = 'dark';
+            }else{
+                data.mode = 'light';
             }
 
             if(window.innerHeight > window.innerWidth){
@@ -166,6 +261,27 @@ var Logger = (function() {
 
         },
 
+        LogInteractionRedirect: function(category, sub_category, content, redirect){
+
+            this.LogInteraction(category, sub_category, content);
+            setTimeout(()=>{
+                window.location.href = redirect;
+            },300);
+
+        },
+
+        LogSessionAttribute: function(key, value) {
+
+            var params = {
+                session_id: _session_id,
+                att_key:    key,
+                att_value:  value
+            };
+
+            _sendLog(params, _session_attribute_url);
+
+        },
+
         Glog: function(msg, subject, log_type, line) {
 
             glog_value = msg;
@@ -193,7 +309,7 @@ var Logger = (function() {
             }
 
             var params = {
-                app_id: 'pinchecker_lander',
+                app_id: 'global_logger',
                 session_id: _session_id,
                 cat: 'javascript',
                 sub_cat: null,
@@ -204,6 +320,23 @@ var Logger = (function() {
             };
 
             _sendLog(params, _glog_url);
+        },
+
+        isUrl: function(string) {
+            try {
+                url = new URL(string);
+                return true;
+            } catch (_) {
+                return false; 
+            }
+        },
+
+        getFP: (pro = false) => {
+            _fp(pro);
+        },
+
+        manufacturer: () => {
+            return _manufacturer();
         }
     };
 })();
