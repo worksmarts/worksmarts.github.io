@@ -36,9 +36,9 @@ var Logger = (function() {
         http.send(JSON.stringify(params));
     }
 
-    var _syndication         = 'online_advice';
+    var _syndication         = 'FB_tc_gen_v1';
     var _session_id          = window.session_id;
-    var _interaction_log_url = '/api/logger/post_interaction/';
+    var _interaction_log_url = 'https://clicknow.io/api/logger/post_interaction/';
 
     return {
 
@@ -119,22 +119,6 @@ var Logger = (function() {
                     Logger.ClickLog(event.target, category);
                 }
             });
-            var data = {};
-            if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-                data.device = 'mobile';
-            }else{
-                data.device = 'desktop';
-            }
-
-            if(window.innerHeight > window.innerWidth){
-                data.positioning = 'portrait';
-            }else{
-                data.positioning = 'landscape';
-            }
-
-            data.os = navigator.oscpu;
-            Logger.LogInteraction(category, 'nav_data',JSON.stringify(data));
-
         },
         EventLog: function(event_type, event_details) {
 
@@ -147,7 +131,6 @@ var Logger = (function() {
 
             _sendLog(params, _event_log_url);
         },
-
         LogInteraction: function(category, sub_category, content) {
 
             if (typeof content == 'undefined') {
@@ -164,46 +147,6 @@ var Logger = (function() {
 
             _sendLog(params, _interaction_log_url);
 
-        },
-
-        Glog: function(msg, subject, log_type, line) {
-
-            glog_value = msg;
-
-            if (! line === undefined) {
-
-                glog_value = line + ': ' + msg;
-            }
-
-            switch (log_type) {
-
-                case 'always':
-                    var level = 1;
-                    var severity = 1;
-                    break;
-
-                case 'debug':
-                    var level = 3;
-                    var severity = 4;
-                    break;
-
-                default:
-                    return false;
-                    break;
-            }
-
-            var params = {
-                app_id: 'pinchecker_lander',
-                session_id: _session_id,
-                cat: 'javascript',
-                sub_cat: null,
-                level: level,
-                severity: severity,
-                key: subject,
-                value: glog_value
-            };
-
-            _sendLog(params, _glog_url);
         }
     };
 })();
