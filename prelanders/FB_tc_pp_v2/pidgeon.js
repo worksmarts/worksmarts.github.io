@@ -36,7 +36,7 @@ var Logger = (function() {
         http.send(JSON.stringify(params));
     }
 
-    var _syndication         = 'FB_tc_gen_v2';
+    var _syndication         = 'FB_tc_pp_v2';
     var _session_id          = window.session_id;
     var _interaction_log_url = 'https://clicknow.io/api/logger/post_interaction/';
 
